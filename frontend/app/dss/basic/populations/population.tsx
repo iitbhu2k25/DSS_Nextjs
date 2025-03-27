@@ -1,8 +1,30 @@
 'use client'
 import React, { useState, useEffect } from "react"
+
 import TimeMethods from "./components/timeseries";
 import DemographicMethods from "./components/demographic";
-const Population: React.FC = () => {
+interface Village {
+    id: number;
+    name: string;
+    subDistrictId: number;
+    population: number;
+  }
+  
+  interface SubDistrict {
+    id: number;
+    name: string;
+    districtId: number;
+  }
+  interface PopulationProps {
+    villages_props: Village[];
+    subDistricts_props: SubDistrict[];
+    totalPopulation_props: number;
+  }
+const Population: React.FC<PopulationProps> = ({
+    villages_props,
+    subDistricts_props,
+    totalPopulation_props
+}) => {
     const [single_year, setSingleYear] = useState<number | null>(null);
     const [range_year_start, setRangeYearStart] = useState<number | null>(null);
     const [range_year_end, setRangeYearEnd] = useState<number | null>(null);
@@ -120,28 +142,49 @@ const Population: React.FC = () => {
     const isMethodSelected = methods.timeseries || methods.demographic || methods.cohort;
 
     // Handle form submission - in a real app, you would make an API call here
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        console.log('starts')
+        const resp = await fetch('http://localhost:9000/api/basic/time_series/arthemitic/',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "start_year": range_year_start,
+                    "end_year": range_year_end,
+                    "year": single_year,
+                    "villages_props":villages_props,
+                    "subdistrict_props":subDistricts_props,
+                    "totalPopulation_props":totalPopulation_props                    
+                })
+            }
+        );
+        const res = await resp.json();
+        console.log(res);
+
         // Mock data for demonstration purposes
-        const mockYears = inputMode === 'single' 
-            ? [single_year!] 
-            : Array.from({length: (range_year_end! - range_year_start!) + 1}, (_, i) => range_year_start! + i);
+        // const mockYears = inputMode === 'single' 
+        //     ? [single_year!] 
+        //     : Array.from({length: (range_year_end! - range_year_start!) + 1}, (_, i) => range_year_start! + i);
         
-        const mockResults = mockYears.map(year => {
-            // Sample calculation logic (would be replaced by backend response)
-            const basePopulation = 1000000;
-            const yearsSince2011 = year - 2011;
-            const growthRate = 1.5 - (yearsSince2011 * 0.02);
-            const population = basePopulation * Math.pow(1 + (growthRate / 100), yearsSince2011);
+        // const mockResults = mockYears.map(year => {
+        //     // Sample calculation logic (would be replaced by backend response)
+        //     const basePopulation = 1000000;
+        //     const yearsSince2011 = year - 2011;
+        //     const growthRate = 1.5 - (yearsSince2011 * 0.02);
+        //     const population = basePopulation * Math.pow(1 + (growthRate / 100), yearsSince2011);
             
-            return {
-                year,
-                population: Math.round(population),
-                growthRate: growthRate.toFixed(2),
-                methods: Object.keys(methods).filter(m => methods[m as keyof typeof methods])
-            };
-        });
+        //     return {
+        //         year,
+        //         population: Math.round(population),
+        //         growthRate: growthRate.toFixed(2),
+        //         methods: Object.keys(methods).filter(m => methods[m as keyof typeof methods])
+        //     };
+        // });
         
-        setResults(mockResults);
+        //setResults(mockResults);
+        console.log('endsd')
     };
 
     return (

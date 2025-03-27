@@ -21,7 +21,15 @@ interface Village extends LocationItem {
   population: number;
 }
 
-const LocationSelector: React.FC = () => {
+interface LocationSelectorProps {
+  onConfirm?: (selectedData: {
+    villages: Village[];
+    subDistricts: SubDistrict[];
+    totalPopulation: number;
+  }) => void;
+}
+
+const LocationSelector: React.FC<LocationSelectorProps> = ({ onConfirm }) => {
   // States for dropdown data
   const [states, setStates] = useState<LocationItem[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
@@ -34,6 +42,9 @@ const LocationSelector: React.FC = () => {
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
   const [selectedSubDistricts, setSelectedSubDistricts] = useState<string[]>([]);
   const [selectedVillages, setSelectedVillages] = useState<string[]>([]);
+  
+  // New state to track if selections are locked after confirmation
+  const [selectionsLocked, setSelectionsLocked] = useState<boolean>(false);
 
   // Fetch states on component mount
   useEffect(() => {
@@ -213,7 +224,9 @@ const LocationSelector: React.FC = () => {
 
   // Handle state selection
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
-    setSelectedState(e.target.value);
+    if (!selectionsLocked) {
+      setSelectedState(e.target.value);
+    }
   };
 
   // Handle form reset
@@ -223,6 +236,32 @@ const LocationSelector: React.FC = () => {
     setSelectedSubDistricts([]);
     setSelectedVillages([]);
     setTotalPopulation(0);
+    setSelectionsLocked(false); // Also unlock selections when resetting
+  };
+
+  // Handle confirm - lock the selections and pass data to parent
+  const handleConfirm = (): void => {
+    if (selectedVillages.length > 0) {
+      setSelectionsLocked(true);
+      
+      // Get the full objects for selected villages and subdistricts
+      const selectedVillageObjects = villages.filter(village => 
+        selectedVillages.includes(village.id.toString())
+      );
+      
+      const selectedSubDistrictObjects = subDistricts.filter(subDistrict => 
+        selectedSubDistricts.includes(subDistrict.id.toString())
+      );
+      
+      // Pass the data to parent component if callback exists
+      if (onConfirm) {
+        onConfirm({
+          villages: selectedVillageObjects,
+          subDistricts: selectedSubDistrictObjects,
+          totalPopulation: totalPopulation
+        });
+      }
+    }
   };
 
   // Format village display to include population
@@ -243,6 +282,7 @@ const LocationSelector: React.FC = () => {
             className="w-full p-2 text-sm border border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={selectedState}
             onChange={handleStateChange}
+            disabled={selectionsLocked}
           >
             <option value="">--Choose a State--</option>
             {states.map(state => (
@@ -257,30 +297,30 @@ const LocationSelector: React.FC = () => {
         <MultiSelect
           items={districts}
           selectedItems={selectedDistricts}
-          onSelectionChange={setSelectedDistricts}
+          onSelectionChange={selectionsLocked ? () => {} : setSelectedDistricts}
           label="District"
           placeholder="--Choose Districts--"
-          disabled={!selectedState}
+          disabled={!selectedState || selectionsLocked}
         />
 
         {/* Sub-District Multiselect with "All" option */}
         <MultiSelect
           items={subDistricts}
           selectedItems={selectedSubDistricts}
-          onSelectionChange={setSelectedSubDistricts}
+          onSelectionChange={selectionsLocked ? () => {} : setSelectedSubDistricts}
           label="Sub-District"
           placeholder="--Choose Sub-Districts--"
-          disabled={selectedDistricts.length === 0}
+          disabled={selectedDistricts.length === 0 || selectionsLocked}
         />
 
         {/* Village Multiselect with "All" option and custom display */}
         <MultiSelect
           items={villages}
           selectedItems={selectedVillages}
-          onSelectionChange={setSelectedVillages}
+          onSelectionChange={selectionsLocked ? () => {} : setSelectedVillages}
           label="Village"
           placeholder="--Choose Villages--"
-          disabled={selectedSubDistricts.length === 0}
+          disabled={selectedSubDistricts.length === 0 || selectionsLocked}
           displayPattern={formatVillageDisplay}
         />
       </div>
@@ -306,20 +346,29 @@ const LocationSelector: React.FC = () => {
               : villages.filter(v => selectedVillages.includes(v.id.toString())).map(v => v.name).join(', '))
             : 'None'}</p>
           <p><span className="font-medium">Total Population:</span> {totalPopulation.toLocaleString()}</p>
-          <div className="flex space-x-4 mt-4">
-            <button 
-              className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            >
-              Confirm
-            </button>
-            <button 
-              className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-              onClick={handleReset}
-            >
-              Reset
-            </button>
-          </div>
+          {selectionsLocked && (
+            <p className="mt-2 text-green-600 font-medium">Selections confirmed and locked</p>
+          )}
         </div>
+      </div>
+      <div className="flex space-x-4 mt-4">
+        <button 
+          className={`${
+            selectedVillages.length > 0 && !selectionsLocked 
+              ? 'bg-blue-500 hover:bg-blue-700' 
+              : 'bg-gray-400 cursor-not-allowed'
+          } text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
+          onClick={handleConfirm}
+          disabled={selectedVillages.length === 0 || selectionsLocked}
+        >
+          Confirm
+        </button>
+        <button 
+          className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+          onClick={handleReset}
+        >
+          Reset
+        </button>
       </div>
     </div>
   );

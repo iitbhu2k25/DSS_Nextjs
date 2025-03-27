@@ -9,26 +9,43 @@ class Locations_stateAPI(APIView):
     def get(self,request,format=None):
         states=Basic_state.objects.all()
         serial=StateSerializer(states,many=True)
-        return Response(serial.data,status=status.HTTP_200_OK)
+        sorted_data = sorted(serial.data, key=lambda x: x['state_name'])
+        return Response(sorted_data,status=status.HTTP_200_OK)
     
 class Locations_districtAPI(APIView):
     def post(self,request,format=None):
         district=Basic_district.objects.all().filter(state_code=request.data['state_code'])
         serial=DistrictSerializer(district,many=True)
-        return Response(serial.data,status=status.HTTP_200_OK)
+        sorted_data=sorted(serial.data,key=lambda x: x['district_name'])
+        return Response(sorted_data,status=status.HTTP_200_OK)
     
 class Locations_subdistrictAPI(APIView):
     def post(self,request,format=None):
         print(request.data['district_code'])
         subdistrict=Basic_subdistrict.objects.all().filter(district_code__in=request.data['district_code'])
         serial=SubDistrictSerializer(subdistrict,many=True)
-        return Response(serial.data,status=status.HTTP_200_OK)
+        sorted_data=sorted(serial.data,key=lambda x: x['subdistrict_name'])
+        return Response(sorted_data,status=status.HTTP_200_OK)
 
 class Locations_villageAPI(APIView):
     def post(self,request,format=None):
         village=Basic_village.objects.all().filter(subdistrict_code__in=request.data['subdistrict_code'])
         serial=VillageSerializer(village,many=True)
-        return Response(serial.data,status=status.HTTP_200_OK)
+        sorted_data=sorted(serial.data,key=lambda x:x ['village_name'])
+        return Response(sorted_data,status=status.HTTP_200_OK)
+
+class Time_series_Airthemitic(APIView):
+    def post(self,request,format=None):
+        # here is check the range or  single
+        single_year=request.data['year']
+        start_year=request.data['start_year']
+        end_year=request.data['end_year']
+        villages=request.data['villages_props']
+        subdistrict=request.data['subDistricts_props']
+        total_population=request.data['totalPopulation_props']
+
+
+        return Response(request.data,status=status.HTTP_200_OK)
 
 
     
