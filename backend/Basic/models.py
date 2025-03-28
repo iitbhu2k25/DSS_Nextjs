@@ -45,4 +45,4 @@ class Population_2011(models.Model):
        population_2011 = models.BigIntegerField()
 
        def __str__(self):
-           return f"{self.region_name}"
+           return f"{self.region_name},{self.subdistrict_code},{self.population_1951},{self.population_1961},{self.population_1971},{self.population_1981},{self.population_1991},{self.population_2001},{self.population_2011}"
