@@ -56,5 +56,25 @@ class Time_series_Airthemitic(APIView):
         print("output",output)
         return Response(output, status=status.HTTP_200_OK)
 
+class Time_series_Geometric(APIView):
+    def post(self, request, format=None):
+        base_year = 2011
+        # Get data from request
+        print('request_data is ',request.data)
+        single_year = request.data['year']
+        start_year = request.data['start_year']
+        end_year = request.data['end_year']
+        villages = request.data['villages_props']
+        subdistrict = request.data['subdistrict_props']
+
+        
+        output=0
+        if single_year:
+            output=population_single_year(base_year,single_year,villages,subdistrict)
+        else:
+            output=population_range(base_year,start_year,end_year,villages,subdistrict)
+        print("output",output)
+        return Response(output, status=status.HTTP_200_OK)
+
 
     

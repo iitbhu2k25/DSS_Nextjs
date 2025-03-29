@@ -77,3 +77,17 @@ def population_range(base_year,start_year,end_year,villages,subdistrict):
                 projected_pop = int(value + ((annual_growth_rate * (year - base_year)) * (value / total_p7)))
             output_year[village_id][str(year)] = projected_pop
     return output_year
+
+
+def geometry_single_year(base_year,single_year,villages,subdistrict):
+    output_year = {}
+    if single_year:
+        target_year = int(single_year)
+        # Process each village
+        for village in villages: 
+            village_id, value = village['id'],village['geometry'] 
+            output_year[village_id] = {
+                "2011": value,
+                str(target_year): value
+            }
+    return output_year

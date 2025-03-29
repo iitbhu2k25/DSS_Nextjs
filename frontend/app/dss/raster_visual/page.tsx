@@ -1,12 +1,10 @@
 'use client'
+import IndiaGISRasterViewer from "./components/raster_display";
 const RasterVisual = () => {
     return (
         <div>
             <h1 className="text-3xl font-bold underline">
-                {/* sidebar for selection the rater files 
-                main component for raster files
-                another component for download */}
-                Raster Visual
+                <IndiaGISRasterViewer />
             </h1>
         </div>
     )
