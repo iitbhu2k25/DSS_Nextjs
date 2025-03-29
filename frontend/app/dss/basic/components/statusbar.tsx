@@ -8,7 +8,7 @@ export default function StaticStatusBar() {
     { id: 'population', name: 'Population Forecasting', status: 'current' },
     { id: 'demand', name: 'Water Demand', status: 'upcoming' },
     { id: 'supply', name: 'Water Supply', status: 'upcoming' },
-    { id: 'quality', name: 'Water Quality', status: 'upcoming' }
+    { id: 'quality', name: 'Sewage', status: 'upcoming' }
     
   ]
 
