@@ -32,8 +32,17 @@ const Basic: React.FC = () => {
     setSelectedLocationData(data);
   };
 
-  useEffect(()=>{
-    if(selectedLocationData){
+  const handleClick = () => {
+    if (currentCount == 1) {
+      setCurrentCount(2);
+    } else if (currentCount == 2) {
+      setCurrentCount(3);
+    }
+    
+  } 
+
+  useEffect(() => {
+    if (selectedLocationData) {
       setCurrentCount(0);
     }
   }, [selectedLocationData]);
@@ -51,7 +60,7 @@ const Basic: React.FC = () => {
         <LocationSelector onConfirm={handleLocationConfirm} />
 
         {/* Only render Population when we have selected data */}
-        {(currentCount==0 && selectedLocationData) && (
+        {(currentCount == 0 && selectedLocationData) && (
           <Population
             villages_props={selectedLocationData.villages}
             subDistricts_props={selectedLocationData.subDistricts}
@@ -59,31 +68,25 @@ const Basic: React.FC = () => {
           />
         )}
         {
-          (currentCount==1) && (
+          (currentCount == 1) && (
             <Water_Supply />
           )
         }
         {
-          (currentCount==2) && (
+          (currentCount == 2) && (
             <Water_Demand />
           )
         }
         {
-          (currentCount==3) && (
-            <Sewage/>
+          (currentCount == 3) && (
+            <Sewage />
           )
         }
         <div className="mt-6 flex justify-between">
           <button
-            className={`${currentCount==0 ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"} text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
-            disabled={currentCount==0}
-            onClick={() => {
-              if (currentCount==1) {
-                setCurrentCount(2);
-              } else if (currentCount==2) {
-                setCurrentCount(3);
-              }
-            }}
+            className={`${currentCount == 0 ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"} text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
+            disabled={currentCount == 0}
+            onClick={handleClick}
           >
             Skip
           </button>
@@ -99,11 +102,11 @@ const Basic: React.FC = () => {
             //     !isMethodSelected
             // }
             onClick={() => {
-              if (currentCount==0) {
+              if (currentCount == 0) {
                 setCurrentCount(1);
-              }else if(currentCount==1){
+              } else if (currentCount == 1) {
                 setCurrentCount(2);
-              }else if(currentCount==2){
+              } else if (currentCount == 2) {
                 setCurrentCount(3)
               }
             }}
