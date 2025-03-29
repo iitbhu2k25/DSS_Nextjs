@@ -188,7 +188,7 @@ const Population: React.FC<PopulationProps> = ({
     };
 
     return (
-        <div className="p-4 bg-white rounded-lg shadow-md">
+        <div className="p-4 mt-5 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl font-bold text-gray-800 mb-6">Population Estimation and Forecasting</h1>
             
             <div className="mb-4">
@@ -366,7 +366,7 @@ const Population: React.FC<PopulationProps> = ({
             )}
 
             {/* Method Descriptions */}
-            <div className="mt-8">
+            {/* <div className="mt-8">
                 <h2 className="text-lg font-semibold text-gray-700 mb-3">Population Prediction Methods</h2>
                 <div className="bg-white rounded-md shadow-sm p-4 border border-gray-200">
                     <h3 className="font-medium text-gray-700 mb-2">Method Descriptions</h3>
@@ -383,7 +383,7 @@ const Population: React.FC<PopulationProps> = ({
                         Population growth is calculated with respect to the base year 2011, showing percentage change over time.
                     </p>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }
