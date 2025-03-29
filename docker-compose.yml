@@ -19,10 +19,10 @@ services:
   db:
     image: postgres:15-alpine
     ports:
-      - "5435:5432"
+      - "5440:5432"
     restart: always
     expose:
-      - "5435"
+      - "5440"
     env_file:
       - .env
     environment:
